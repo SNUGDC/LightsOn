@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class TileController : MonoBehaviour
 {
@@ -74,15 +75,15 @@ public class TileController : MonoBehaviour
 			return;
 		}
 
-		Direction direction = queue[0].dir;
-		Color color = queue[0].color;
-
-		CreateLaser(direction, color);
-		PassQueueToNextTile(direction, color);		
+		CreateLaser(queue[0]);
+		PassQueueToNextTile(queue[0]);		
 	}
 
-	private void CreateLaser(Direction direction, Color color)
+	private void CreateLaser(LaserQueue firstQueue)
 	{
+		Direction direction = firstQueue.dir;
+		Color color = firstQueue.color;
+
 		int laserLength;
 		myLaser = Instantiate(laser, transform.position, SpawnAngle(direction));
 
@@ -92,27 +93,10 @@ public class TileController : MonoBehaviour
 
 	private int DecideLaserLength(Direction direction, Color color)
 	{
-		/*foreach(GameManager.Prism prism in GM.GetComponent<GameManager>().prism)
-		{
-			if(NextPos(direction) != prism.pos)
-			{
-				Debug.Log("프리즘이 없어서 길이가 5가 된 위치는 " + myPosX + ", " + myPosY);
-				return 5;
-			}
-		}
-		foreach(GameManager.Prism prism in GM.GetComponent<GameManager>().prism)
-		{
-			if(FilterToCheck(prism, direction).color == color)
-			{
-				Debug.Log("올바른 필터로 인해 길이가 5가 된 위치는 " + myPosX + ", " + myPosY);
-				return 5;
-			}
-		}*/
 		foreach(GameManager.Prism prism in GM.GetComponent<GameManager>().prism)
 		{
 			if(NextPos(direction) == prism.pos && FilterToCheck(prism, direction).color != color)
 			{
-				//Debug.Log("올바르지 않은 필터로 인해 길이가 3이 된 위치는 " + myPosX + ", " + myPosY);
 				return 3;
 			}
 		}
@@ -151,43 +135,42 @@ public class TileController : MonoBehaviour
 		return angle;
 	}
 
-	private void PassQueueToNextTile(Direction direction, Color color)
+	private void PassQueueToNextTile(LaserQueue firstQueue)
 	{
+		Direction inputDirection = firstQueue.dir;
+		Color inputColor = firstQueue.color;
+
 		queue.RemoveAt(0);
 
-		if(PrismCheck(direction) == false)
+		if(PrismCheck(inputDirection) == false) // 다음 타일에 프리즘이 없을 경우
 		{
-			if (Tile((int)NextPos(direction).x, (int)NextPos(direction).y) == null)
+			if (Tile((int)NextPos(inputDirection).x, (int)NextPos(inputDirection).y) == null)
 				return;
-			// Tile((int)NextPos(direction).x, (int)NextPos(direction).y).laserColor = laserColor;
-			// Tile((int)NextPos(direction).x, (int)NextPos(direction).y).laserDir = laserDir;
 
-			Tile((int)NextPos(direction).x, (int)NextPos(direction).y).queue.Add(new LaserQueue(color, direction));
+			Tile((int)NextPos(inputDirection).x, (int)NextPos(inputDirection).y).queue.Add(new LaserQueue(inputColor, inputDirection));
 		}
-		else if(PrismCheck(direction) == true)
+		else if(PrismCheck(inputDirection) == true) // 다음 타일에 프리즘이 있을 경우
 		{
-			if(FilterToCheck(GetPrism(direction), direction).color != color)
+			if(FilterToCheck(GetPrism(inputDirection), inputDirection).color != inputColor) // 잘못된 필터를 통과할 경우
 				return;
-			else if (FilterToCheck(GetPrism(direction), direction).color == color)
+
+			var allOutputDirections = new List<Direction> {									// 올바른 필터를 통과할 경우
+				Direction.Right, Direction.Left, Direction.Up, Direction.Down
+			};
+			var outputDirections = allOutputDirections.Where(d => d != Opposite(inputDirection)).ToList();
+
+			var nextPrism = GetPrism(inputDirection);
+			foreach (var outputDir in outputDirections)
 			{
-				switch(direction)
+				var nextPrismFilter = nextPrism.GetFilter(outputDir);
+				if (nextPrismFilter.color == inputColor)
 				{
-					case Direction.Right:
-					if(GetPrism(direction).upFilter.color != Color.None)
-					{
-						Color filterColor = GetPrism(direction).upFilter.color;
-						Direction filterDirection = Direction.Up;
-
-						// Tile((int)NextPos(direction).x, (int)NextPos(direction).y).laserColor = filterColor;
-						// Tile((int)NextPos(direction).x, (int)NextPos(direction).y).laserDir = filterDirection;
-
-						Tile((int)NextPos(direction).x, (int)NextPos(direction).y).queue.Add(new LaserQueue(filterColor, filterDirection));
-					}
-					break;
+					Color filterColor = nextPrismFilter.color;
+					Direction filterDirection = outputDir;
+					Tile((int)NextPos(inputDirection).x, (int)NextPos(inputDirection).y).queue.Add(new LaserQueue(filterColor, filterDirection));
 				}
 			}
 		}
-		
 	}
 
 	private bool PrismCheck(Direction direction)
@@ -261,5 +244,21 @@ public class TileController : MonoBehaviour
 			Debug.Log("Sth is wrong at FilterToCheck Function");
 			return null;
 		}
+	}
+
+	private Direction Opposite(Direction direction)
+	{
+		switch(direction)
+		{
+			case Direction.Right:
+				return Direction.Left;
+			case Direction.Left:
+				return Direction.Right;
+			case Direction.Up:
+				return Direction.Down;
+			case Direction.Down:
+				return Direction.Up;
+		}
+		return Direction.None;
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,7 +26,23 @@ public class GameManager : MonoBehaviour
 		public Filter upFilter;
 		public Filter downFilter;
 
-	}
+        public Filter GetFilter(TileController.Direction outputDir)
+        {
+			switch (outputDir)
+			{
+				case TileController.Direction.Up:
+				return upFilter;
+				case TileController.Direction.Left:
+				return leftFilter;
+				case TileController.Direction.Right:
+				return rightFilter;
+				case TileController.Direction.Down:
+				return downFilter;
+				default:
+				return null;
+			}
+        }
+    }
 	[System.Serializable]
 	public class Filter
 	{
