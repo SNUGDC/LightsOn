@@ -8,4 +8,6 @@ public class PrismController : MonoBehaviour
 	public GameObject leftFilter;
 	public GameObject upFilter;
 	public GameObject downFilter;
+
+	//private void 
 }

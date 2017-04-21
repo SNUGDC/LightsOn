@@ -54,6 +54,16 @@ public class GameManager : MonoBehaviour
 	public Sprite[] normalFilterImage;
 	public Sprite[] laserSprite;
 
+	[System.Serializable]
+	public class Goal
+	{
+		public Vector2 pos;
+		public TileController.Color color;
+		public bool isOn;
+	}
+
+	public Goal[] goal;
+
 	public GameObject Tile(int n, int m)
 	{
 		switch(m)
