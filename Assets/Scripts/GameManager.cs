@@ -110,37 +110,39 @@ public class GameManager : MonoBehaviour
 
 	private void InitializePrism(Prism prism)
 	{
+		PrismController prismController = prism.prismObject.GetComponent<PrismController>();
+		
 		if(prism.rightFilter.color == TileController.Color.None)
 		{
-			Destroy(prism.prismObject.GetComponent<PrismController>().rightFilter);
+			Destroy(prismController.rightFilter);
 		}
 		else
 		{
-			prism.prismObject.GetComponent<PrismController>().rightFilter.GetComponent<SpriteRenderer>().sprite = FilterColor(prism.rightFilter.color);
+			prismController.rightFilter.GetComponent<SpriteRenderer>().sprite = FilterColor(prism.rightFilter.color);
 		}
 		if(prism.leftFilter.color == TileController.Color.None)
 		{
-			Destroy(prism.prismObject.GetComponent<PrismController>().leftFilter);
+			Destroy(prismController.leftFilter);
 		}
 		else
 		{
-			prism.prismObject.GetComponent<PrismController>().leftFilter.GetComponent<SpriteRenderer>().sprite = FilterColor(prism.leftFilter.color);
+			prismController.leftFilter.GetComponent<SpriteRenderer>().sprite = FilterColor(prism.leftFilter.color);
 		}
 		if(prism.upFilter.color == TileController.Color.None)
 		{
-			Destroy(prism.prismObject.GetComponent<PrismController>().upFilter);
+			Destroy(prismController.upFilter);
 		}
 		else
 		{
-			prism.prismObject.GetComponent<PrismController>().upFilter.GetComponent<SpriteRenderer>().sprite = FilterColor(prism.upFilter.color);
+			prismController.upFilter.GetComponent<SpriteRenderer>().sprite = FilterColor(prism.upFilter.color);
 		}
 		if(prism.downFilter.color == TileController.Color.None)
 		{
-			Destroy(prism.prismObject.GetComponent<PrismController>().downFilter);
+			Destroy(prismController.downFilter);
 		}
 		else
 		{
-			prism.prismObject.GetComponent<PrismController>().downFilter.GetComponent<SpriteRenderer>().sprite = FilterColor(prism.downFilter.color);
+			prismController.downFilter.GetComponent<SpriteRenderer>().sprite = FilterColor(prism.downFilter.color);
 		}
 	}
 
