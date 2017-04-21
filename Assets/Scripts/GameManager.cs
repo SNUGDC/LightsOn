@@ -57,12 +57,14 @@ public class GameManager : MonoBehaviour
 	[System.Serializable]
 	public class Goal
 	{
+		public Sprite goalSprite;
 		public Vector2 pos;
 		public TileController.Color color;
 		public bool isOn;
 	}
 
 	public Goal[] goal;
+	public GameObject goalPrefab;
 
 	public GameObject Tile(int n, int m)
 	{
@@ -104,6 +106,13 @@ public class GameManager : MonoBehaviour
 			TileController tile = Tile(x,y).GetComponent<TileController>();
 			tile.state = TileController.State.prism;
 		}
+		foreach(Goal goal in goal)
+		{
+			int x = (int)goal.pos.x;
+			int y = (int)goal.pos.y;
+			TileController tile = Tile(x,y).GetComponent<TileController>();
+			tile.state = TileController.State.Goal;
+		}
 	}
 
 	private void Start()
@@ -117,6 +126,21 @@ public class GameManager : MonoBehaviour
 			prism.prismObject = Instantiate(prismPrefab, 10*prism.pos, new Quaternion(0, 0, 0, 0));
 			InitializePrism(prism);
 		}
+		foreach (Goal goal in goal)
+		{
+			goal.goalSprite = Instantiate(goalPrefab, 10*goal.pos, new Quaternion(0, 0, 0, 0)).GetComponent<SpriteRenderer>().sprite;
+		}
+	}
+
+	private void Update()
+	{
+		foreach(Goal goal in goal)
+		{
+			if(goal.isOn == false)
+				return;
+		}
+
+		Debug.Log("골인!");
 	}
 
 	private void InitializePrism(Prism prism)

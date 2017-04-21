@@ -17,7 +17,7 @@ public class TileController : MonoBehaviour
 
 	public enum State
 	{
-		None, Base, prism, LightSource
+		None, Base, prism, LightSource, Goal
 	}
 
 	public State state;
@@ -52,11 +52,14 @@ public class TileController : MonoBehaviour
 		switch(state)
 		{
 			case State.None:
-			GetComponent<SpriteRenderer>().sprite = null;
-			break;
+				GetComponent<SpriteRenderer>().sprite = null;
+				break;
+			case State.Goal:
+				GetComponent<SpriteRenderer>().sprite = null;
+				break;
 			case State.LightSource:
-			queue.Add(new LaserQueue(laserColor, laserDir));
-			break;
+				queue.Add(new LaserQueue(laserColor, laserDir));
+				break;
 		}
 	}
 
@@ -76,7 +79,7 @@ public class TileController : MonoBehaviour
 		}
 
 		CreateLaser(queue[0]);
-		PassQueueToNextTile(queue[0]);		
+		PassQueueToNextTile(queue[0]);
 	}
 
 	private void CreateLaser(LaserQueue firstQueue)
@@ -90,6 +93,8 @@ public class TileController : MonoBehaviour
 		laserLength = DecideLaserLength(direction, color);
 		myLaser.transform.localScale = new Vector3(laserLength,1,1);
 		myLaser.GetComponent<SpriteRenderer>().sprite = GM.GetComponent<GameManager>().LaserSprite(color);
+
+		CheckGoalIn(color);
 	}
 
 	private int DecideLaserLength(Direction direction, Color color)
@@ -261,5 +266,19 @@ public class TileController : MonoBehaviour
 				return Direction.Up;
 		}
 		return Direction.None;
+	}
+
+	private void CheckGoalIn(Color color)
+	{
+		if(state != State.Goal)
+			return;
+
+		foreach(GameManager.Goal goal in GM.GetComponent<GameManager>().goal)
+		{
+			if(goal.color != color)
+				return;
+
+			goal.isOn = true;
+		}
 	}
 }
