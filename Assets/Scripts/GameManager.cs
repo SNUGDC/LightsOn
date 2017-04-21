@@ -52,6 +52,7 @@ public class GameManager : MonoBehaviour
 	public Prism[] prism;
 	public GameObject prismPrefab;
 	public Sprite[] normalFilterImage;
+	public Sprite[] laserSprite;
 
 	public GameObject Tile(int n, int m)
 	{
@@ -111,7 +112,7 @@ public class GameManager : MonoBehaviour
 	private void InitializePrism(Prism prism)
 	{
 		PrismController prismController = prism.prismObject.GetComponent<PrismController>();
-		
+
 		if(prism.rightFilter.color == TileController.Color.None)
 		{
 			Destroy(prismController.rightFilter);
@@ -161,6 +162,24 @@ public class GameManager : MonoBehaviour
 			default:
 			Debug.Log("Sth is wrong at FilterColor Function");
 			return normalFilterImage[0];
+		}
+	}
+
+	public Sprite LaserSprite(TileController.Color color)
+	{
+		switch(color)
+		{
+			case TileController.Color.White:
+			return laserSprite[0];
+			case TileController.Color.Red:
+			return laserSprite[1];
+			case TileController.Color.Green:
+			return laserSprite[2];
+			case TileController.Color.Blue:
+			return laserSprite[3];
+			default:
+			Debug.Log("Sth is wrong at FilterColor Function");
+			return laserSprite[0];
 		}
 	}
 }

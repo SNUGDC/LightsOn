@@ -89,6 +89,7 @@ public class TileController : MonoBehaviour
 
 		laserLength = DecideLaserLength(direction, color);
 		myLaser.transform.localScale = new Vector3(laserLength,1,1);
+		myLaser.GetComponent<SpriteRenderer>().sprite = GM.GetComponent<GameManager>().LaserSprite(color);
 	}
 
 	private int DecideLaserLength(Direction direction, Color color)
