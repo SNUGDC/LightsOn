@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
 
 	public GameObject Tile(int n, int m)
 	{
+		Debug.Assert(n > 2 || n < -2 || m > 3 || m < -3);
 		switch(m)
 		{
 			case -3:
