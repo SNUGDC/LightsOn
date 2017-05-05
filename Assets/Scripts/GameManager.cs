@@ -5,6 +5,15 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+	public enum Color
+	{
+		White, Red, Green, Blue
+	}
+	public enum Direction
+	{
+		Right, Left, Up, Down
+	}
+
 	public GameObject[] Tile0;
 	public GameObject[] Tile1;
 	public GameObject[] Tile2;
@@ -13,58 +22,7 @@ public class GameManager : MonoBehaviour
 	public GameObject[] Tile5;
 	public GameObject[] Tile6;
 
-	public Vector2[] lightSource;
-	public GameObject lightSourcePrefab;
-
-	[System.Serializable]
-	public class Prism
-	{
-		public GameObject prismObject;
-		public Vector2 pos;
-		public Filter rightFilter;
-		public Filter leftFilter;
-		public Filter upFilter;
-		public Filter downFilter;
-
-        public Filter GetFilter(TileController.Direction outputDir)
-        {
-			switch (outputDir)
-			{
-				case TileController.Direction.Up:
-				return upFilter;
-				case TileController.Direction.Left:
-				return leftFilter;
-				case TileController.Direction.Right:
-				return rightFilter;
-				case TileController.Direction.Down:
-				return downFilter;
-				default:
-				return null;
-			}
-        }
-    }
-	[System.Serializable]
-	public class Filter
-	{
-		public TileController.Color color;
-	}
-
-	public Prism[] prism;
-	public GameObject prismPrefab;
-	public Sprite[] normalFilterImage;
-	public Sprite[] laserSprite;
-
-	[System.Serializable]
-	public class Goal
-	{
-		public Sprite goalSprite;
-		public Vector2 pos;
-		public TileController.Color color;
-		public bool isOn;
-	}
-
-	public Goal[] goal;
-	public GameObject goalPrefab;
+	public int amountOfGoalIn = 0;
 
 	public GameObject Tile(int n, int m)
 	{
@@ -87,133 +45,6 @@ public class GameManager : MonoBehaviour
 			default:
 			Debug.Log("Tile is out of range");
 			return null;
-		}
-	}
-
-	private void Awake()
-	{
-		foreach(Vector2 pos in lightSource)
-		{
-			int x = (int)pos.x;
-			int y = (int)pos.y;
-			TileController tile = Tile(x,y).GetComponent<TileController>();
-			tile.state = TileController.State.LightSource;
-		}
-		foreach (Prism prism in prism)
-		{
-			int x = (int)prism.pos.x;
-			int y = (int)prism.pos.y;
-			TileController tile = Tile(x,y).GetComponent<TileController>();
-			tile.state = TileController.State.prism;
-		}
-		foreach(Goal goal in goal)
-		{
-			int x = (int)goal.pos.x;
-			int y = (int)goal.pos.y;
-			TileController tile = Tile(x,y).GetComponent<TileController>();
-			tile.state = TileController.State.Goal;
-		}
-	}
-
-	private void Start()
-	{
-		foreach(Vector2 pos in lightSource)
-		{
-			Instantiate(lightSourcePrefab, 10*pos, new Quaternion(0, 0, 0, 0));
-		}
-		foreach (Prism prism in prism)
-		{
-			prism.prismObject = Instantiate(prismPrefab, 10*prism.pos, new Quaternion(0, 0, 0, 0));
-			InitializePrism(prism);
-		}
-		foreach (Goal goal in goal)
-		{
-			goal.goalSprite = Instantiate(goalPrefab, 10*goal.pos, new Quaternion(0, 0, 0, 0)).GetComponent<SpriteRenderer>().sprite;
-		}
-	}
-
-	private void Update()
-	{
-		foreach(Goal goal in goal)
-		{
-			if(goal.isOn == false)
-				return;
-		}
-
-		Debug.Log("골인!");
-	}
-
-	private void InitializePrism(Prism prism)
-	{
-		PrismController prismController = prism.prismObject.GetComponent<PrismController>();
-
-		if(prism.rightFilter.color == TileController.Color.None)
-		{
-			Destroy(prismController.rightFilter);
-		}
-		else
-		{
-			prismController.rightFilter.GetComponent<SpriteRenderer>().sprite = FilterColor(prism.rightFilter.color);
-		}
-		if(prism.leftFilter.color == TileController.Color.None)
-		{
-			Destroy(prismController.leftFilter);
-		}
-		else
-		{
-			prismController.leftFilter.GetComponent<SpriteRenderer>().sprite = FilterColor(prism.leftFilter.color);
-		}
-		if(prism.upFilter.color == TileController.Color.None)
-		{
-			Destroy(prismController.upFilter);
-		}
-		else
-		{
-			prismController.upFilter.GetComponent<SpriteRenderer>().sprite = FilterColor(prism.upFilter.color);
-		}
-		if(prism.downFilter.color == TileController.Color.None)
-		{
-			Destroy(prismController.downFilter);
-		}
-		else
-		{
-			prismController.downFilter.GetComponent<SpriteRenderer>().sprite = FilterColor(prism.downFilter.color);
-		}
-	}
-
-	private Sprite FilterColor(TileController.Color color)
-	{
-		switch(color)
-		{
-			case TileController.Color.White:
-			return normalFilterImage[0];
-			case TileController.Color.Red:
-			return normalFilterImage[1];
-			case TileController.Color.Green:
-			return normalFilterImage[2];
-			case TileController.Color.Blue:
-			return normalFilterImage[3];
-			default:
-			Debug.Log("Sth is wrong at FilterColor Function");
-			return normalFilterImage[0];
-		}
-	}
-
-	public Sprite LaserSprite(TileController.Color color)
-	{
-		switch(color)
-		{
-			case TileController.Color.White:
-			return laserSprite[0];
-			case TileController.Color.Red:
-			return laserSprite[1];
-			case TileController.Color.Green:
-			return laserSprite[2];
-			case TileController.Color.Blue:
-			return laserSprite[3];
-			default:
-			Debug.Log("Sth is wrong at FilterColor Function");
-			return laserSprite[0];
 		}
 	}
 }
